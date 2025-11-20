@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Order {
+  id            String    @id @default(uuid())
+  type          String    // "market" | "limit" | "sniper"
+  tokenIn       String
+  tokenOut      String
+  amount        String    // Store as string to handle large numbers
+  limitPrice    String?   // Nullable for market orders
+  status        String    // pending, routing, building, submitted, confirmed, failed, waiting_for_trigger, scanning_launch
+  dexSelected   String?   // "raydium" | "meteora" | null
+  executedPrice String?   // Nullable until execution
+  txHash        String?
+  errorMessage  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+}
+
+
+

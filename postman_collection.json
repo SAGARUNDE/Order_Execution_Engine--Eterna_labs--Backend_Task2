@@ -1,0 +1,182 @@
+{
+  "info": {
+    "name": "Eterna Labs Order Execution Engine",
+    "description": "Complete API collection for Order Execution Engine. See POSTMAN_GUIDE.md for detailed instructions.\n\n**Quick Start:**\n1. Start server: `npm run dev`\n2. Test Health Check first\n3. Create an order (Market/Limit/Sniper)\n4. Copy orderId from response\n5. Connect WebSocket: `ws://localhost:3000/api/orders/{orderId}/ws`\n\n**Note:** WebSocket requires Postman v10+ or use wscat CLI tool.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Verify server is running. Should return status: ok"
+      },
+      "response": []
+    },
+    {
+      "name": "2. Orders",
+      "item": [
+        {
+          "name": "Create Market Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save orderId to collection variable for WebSocket testing",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.orderId) {",
+                  "        pm.collectionVariables.set('order_id', response.orderId);",
+                  "        console.log('Order ID saved:', response.orderId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"market\",\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": \"100\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/execute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "execute"]
+            },
+            "description": "Creates a market order that executes immediately at best available price.\n\n**Response:** Returns orderId - save this for WebSocket connection.\n\n**WebSocket URL:** `ws://localhost:3000/api/orders/{orderId}/ws`"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Limit Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save orderId to collection variable for WebSocket testing",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.orderId) {",
+                  "        pm.collectionVariables.set('order_id', response.orderId);",
+                  "        console.log('Order ID saved:', response.orderId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"limit\",\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": \"100\",\n  \"limitPrice\": \"1.05\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/execute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "execute"]
+            },
+            "description": "Creates a limit order that waits for price condition.\n\n**Condition:** Executes when currentPrice >= limitPrice (for selling)\n**Timeout:** 30 minutes (configurable)\n\n**Response:** Returns orderId - save this for WebSocket connection.\n\n**WebSocket Events:** pending → waiting_for_trigger → routing → building → submitted → confirmed"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Sniper Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save orderId to collection variable for WebSocket testing",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.orderId) {",
+                  "        pm.collectionVariables.set('order_id', response.orderId);",
+                  "        console.log('Order ID saved:', response.orderId);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"sniper\",\n  \"tokenIn\": \"NEW_TOKEN\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": \"100\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/execute",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "execute"]
+            },
+            "description": "Creates a sniper order that waits for token availability (launch detection).\n\n**Behavior:** Polls DEX quotes every 1 second until token becomes available, then executes immediately.\n\n**Response:** Returns orderId - save this for WebSocket connection.\n\n**WebSocket Events:** pending → scanning_launch → routing → building → submitted → confirmed"
+          },
+          "response": []
+        }
+      ],
+      "description": "Order creation endpoints. Each returns an orderId that should be used for WebSocket connection."
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string",
+      "description": "Auto-filled from order creation responses. Use for WebSocket URL: ws://localhost:3000/api/orders/{{order_id}}/ws"
+    }
+  ]
+}
+
+

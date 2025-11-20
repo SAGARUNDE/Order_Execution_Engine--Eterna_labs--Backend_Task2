@@ -1,0 +1,42 @@
+{
+  "name": "eterna-order-execution-engine",
+  "version": "1.0.0",
+  "description": "Order Execution Engine with Market, Limit, and Sniper order types",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
+  },
+  "keywords": [
+    "order-execution",
+    "dex",
+    "trading"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/websocket": "^11.2.0",
+    "@prisma/client": "^6.19.0",
+    "bullmq": "^5.4.0",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.6.2",
+    "ioredis": "^5.3.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@vitest/coverage-v8": "^4.0.10",
+    "prisma": "^6.19.0",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.3",
+    "vitest": "^4.0.10"
+  }
+}
+
