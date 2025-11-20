@@ -41,8 +41,8 @@ async function start() {
       host: '0.0.0.0',
     });
 
-    console.log(`🚀 Server listening on port ${config.server.port}`);
-    console.log(`📊 Queue worker running with concurrency: ${config.queue.concurrency}`);
+    console.log(` Server listening on port ${config.server.port}`);
+    console.log(` Queue worker running with concurrency: ${config.queue.concurrency}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

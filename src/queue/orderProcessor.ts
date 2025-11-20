@@ -102,6 +102,7 @@ export function createOrderWorker() {
       lockDuration: config.queue.lockDurationMs,
       stalledInterval: config.queue.stalledIntervalMs,
       maxStalledCount: config.queue.maxStalledRetries,
+      useWorkerThreads: false,
       removeOnComplete: {
         age: 3600, // Keep completed jobs for 1 hour
         count: 1000, // Keep max 1000 completed jobs

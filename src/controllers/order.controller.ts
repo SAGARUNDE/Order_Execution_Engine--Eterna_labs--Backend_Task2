@@ -4,6 +4,7 @@ import { OrderService } from '../services/order.service';
 import { orderQueue } from '../queue/queue';
 import { wsEmitter } from '../ws/websocketHandler';
 import { CreateOrderRequest } from '../utils/types';
+import { config } from '../config';
 
 const createOrderSchema = z.object({
   type: z.enum(['market', 'limit', 'sniper']),
@@ -42,6 +43,16 @@ export class OrderController {
       });
 
       // Add job to queue
+      const sniperDelayMs =
+        order.type === 'sniper' ? config.order.sniperLaunchDelayMs : 0;
+
+      if (order.type === 'sniper' && sniperDelayMs > 0) {
+        wsEmitter.emit(order.id, 'pending', {
+          type: order.type as 'sniper',
+          message: `Sniper order scheduled to execute in ${Math.round(sniperDelayMs / 1000)}s`,
+        });
+      }
+
       await orderQueue.add(
         `order-${order.id}`,
         {
@@ -54,6 +65,7 @@ export class OrderController {
         },
         {
           jobId: order.id, // Use order ID as job ID for uniqueness
+          delay: sniperDelayMs > 0 ? sniperDelayMs : undefined,
         }
       );
 

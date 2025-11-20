@@ -47,6 +47,7 @@ export const config = {
   order: {
     limitOrderTimeoutMinutes: parseInt(process.env.LIMIT_ORDER_TIMEOUT_MINUTES || '30', 10),
     sniperPollIntervalMs: parseInt(process.env.SNIPER_POLL_INTERVAL_MS || '1000', 10),
+    sniperLaunchDelayMs: parseInt(process.env.SNIPER_LAUNCH_DELAY_MS || '60000', 10),
     dexQuotePollIntervalMs: parseInt(process.env.DEX_QUOTE_POLL_INTERVAL_MS || '1000', 10),
   },
   queue: {
