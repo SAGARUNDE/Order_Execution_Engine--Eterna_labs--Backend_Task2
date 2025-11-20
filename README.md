@@ -317,29 +317,6 @@ npm run test:coverage
 6. **Build command**: `npm install && npm run build`
 7. **Start command**: `npm start`
 
-### Environment Variables
-
-```env
-PORT=3000
-NODE_ENV=production
-DATABASE_URL=postgresql://...
-REDIS_HOST=...
-REDIS_PORT=6379
-REDIS_USERNAME=default
-REDIS_PASSWORD=...
-REDIS_TLS=true
-REDIS_TLS_REJECT_UNAUTHORIZED=true
-# or use Upstash REST credentials (auto-converts to Redis connection)
-UPSTASH_REDIS_REST_URL=https://<your-upstash-instance>.upstash.io
-UPSTASH_REDIS_REST_TOKEN=your-rest-token
-LIMIT_ORDER_TIMEOUT_MINUTES=30
-SNIPER_POLL_INTERVAL_MS=1000
-SNIPER_LAUNCH_DELAY_MS=60000
-DEX_QUOTE_POLL_INTERVAL_MS=1000
-QUEUE_CONCURRENCY=10
-QUEUE_MAX_ATTEMPTS=3
-```
-
 ## 📡 API Documentation
 
 ### POST /api/orders/execute
@@ -492,10 +469,6 @@ All configuration is managed via environment variables (see `.env.example`):
 - **Redis**: Host, port, password
 - **Orders**: Timeout, poll intervals
 - **Queue**: Concurrency, max attempts
-
-## 📝 License
-
-ISC
 
 ## 🤝 Contributing
 
