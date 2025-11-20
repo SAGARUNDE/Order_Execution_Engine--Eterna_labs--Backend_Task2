@@ -5,6 +5,7 @@ A complete TypeScript backend system for executing cryptocurrency orders with su
 ## 🚀 Features
 
 - **Three Order Types**:
+
   - **Market Order**: Immediate execution at best available price
   - **Limit Order**: Execute only when price condition is met
   - **Sniper Order**: Execute when token becomes available (launch detection)
@@ -118,17 +119,18 @@ The system uses a two-step process:
 2. **GET /api/orders/:orderId/ws**: Connect WebSocket to receive real-time updates
 
 **Example Flow**:
+
 ```javascript
 // Step 1: Create order
-const response = await fetch('http://localhost:3000/api/orders/execute', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("http://localhost:3000/api/orders/execute", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    type: 'market',
-    tokenIn: 'SOL',
-    tokenOut: 'USDC',
-    amount: '100'
-  })
+    type: "market",
+    tokenIn: "SOL",
+    tokenOut: "USDC",
+    amount: "100",
+  }),
 });
 
 const { orderId } = await response.json();
@@ -138,7 +140,7 @@ const ws = new WebSocket(`ws://localhost:3000/api/orders/${orderId}/ws`);
 
 ws.onmessage = (event) => {
   const message = JSON.parse(event.data);
-  console.log('Order status:', message.status);
+  console.log("Order status:", message.status);
 };
 ```
 
@@ -147,11 +149,13 @@ ws.onmessage = (event) => {
 The system supports two mock DEXes:
 
 ### Raydium
+
 - **Price Range**: `basePrice * (0.98 to 1.02)`
 - **Fee**: 0.3% (0.003)
 - **Delay**: 200ms
 
 ### Meteora
+
 - **Price Range**: `basePrice * (0.97 to 1.02)`
 - **Fee**: 0.2% (0.002)
 - **Delay**: 200ms
@@ -161,6 +165,7 @@ The system supports two mock DEXes:
 The router compares **effective price** = `price * (1 + fee)` and selects the DEX with the lowest effective price.
 
 **Example**:
+
 - Raydium: price=1.0, fee=0.003 → effective=1.003
 - Meteora: price=0.99, fee=0.002 → effective=0.99198
 - **Selected**: Meteora (lower effective price)
@@ -168,6 +173,7 @@ The router compares **effective price** = `price * (1 + fee)` and selects the DE
 ## 🔄 Queue & Retry Logic
 
 ### Configuration
+
 - **Queue Name**: `order-exec-queue`
 - **Concurrency**: 10 orders simultaneously
 - **Max Attempts**: 3 retries
@@ -182,6 +188,7 @@ The router compares **effective price** = `price * (1 + fee)` and selects the DE
 ### Queue Workers
 
 Single worker with branching logic based on `order.type`:
+
 - `market` → `MarketOrderService`
 - `limit` → `LimitOrderService`
 - `sniper` → `SniperOrderService`
@@ -197,17 +204,20 @@ Single worker with branching logic based on `order.type`:
 ### Local Setup
 
 1. **Clone and install dependencies**:
+
 ```bash
 npm install
 ```
 
 2. **Set up environment variables**:
+
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
 3. **Set up database**:
+
 ```bash
 # Generate Prisma client
 npm run db:generate
@@ -217,11 +227,13 @@ npm run db:push
 ```
 
 4. **Start Redis**:
+
 ```bash
 redis-server
 ```
 
 5. **Start the application**:
+
 ```bash
 # Development
 npm run dev
@@ -234,11 +246,13 @@ npm start
 ## 🧪 Testing
 
 ### Run All Tests
+
 ```bash
 npm test
 ```
 
 ### Run with Coverage
+
 ```bash
 npm run test:coverage
 ```
@@ -246,26 +260,31 @@ npm run test:coverage
 ### Test Categories
 
 1. **DEX Routing Tests** (`src/tests/dexRouter.test.ts`):
+
    - Raydium quote generation
    - Meteora quote generation
    - Best DEX selection
    - Swap execution
 
 2. **Order Flow Tests** (`src/tests/orderFlow.test.ts`):
+
    - Market order lifecycle
    - Limit order price condition waiting
    - Sniper order token availability
 
 3. **Queue Tests** (`src/tests/queue.test.ts`):
+
    - Job addition
    - Configuration validation
 
 4. **WebSocket Tests** (`src/tests/websocket.test.ts`):
+
    - Connection management
    - Message emission
    - Event sequence validation
 
 5. **Database Tests** (`src/tests/database.test.ts`):
+
    - Order creation
    - Status updates
    - Error message storage
@@ -306,6 +325,13 @@ NODE_ENV=production
 DATABASE_URL=postgresql://...
 REDIS_HOST=...
 REDIS_PORT=6379
+REDIS_USERNAME=default
+REDIS_PASSWORD=...
+REDIS_TLS=true
+REDIS_TLS_REJECT_UNAUTHORIZED=true
+# or use Upstash REST credentials (auto-converts to Redis connection)
+UPSTASH_REDIS_REST_URL=https://<your-upstash-instance>.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-rest-token
 LIMIT_ORDER_TIMEOUT_MINUTES=30
 SNIPER_POLL_INTERVAL_MS=1000
 DEX_QUOTE_POLL_INTERVAL_MS=1000
@@ -320,6 +346,7 @@ QUEUE_MAX_ATTEMPTS=3
 Create a new order.
 
 **Request Body**:
+
 ```json
 {
   "type": "market" | "limit" | "sniper",
@@ -331,6 +358,7 @@ Create a new order.
 ```
 
 **Response**:
+
 ```json
 {
   "orderId": "uuid"
@@ -338,6 +366,7 @@ Create a new order.
 ```
 
 **Example**:
+
 ```bash
 curl -X POST http://localhost:3000/api/orders/execute \
   -H "Content-Type: application/json" \
@@ -360,6 +389,7 @@ WebSocket endpoint for real-time order updates.
 Health check endpoint.
 
 **Response**:
+
 ```json
 {
   "status": "ok",
@@ -390,6 +420,7 @@ Health check endpoint.
 ### Event Sequence Examples
 
 #### Market Order
+
 ```json
 {"orderId": "...", "status": "pending", "type": "market"}
 {"orderId": "...", "status": "routing", "type": "market", "details": {"dex": "raydium"}}
@@ -399,6 +430,7 @@ Health check endpoint.
 ```
 
 #### Limit Order
+
 ```json
 {"orderId": "...", "status": "pending", "type": "limit"}
 {"orderId": "...", "status": "waiting_for_trigger", "type": "limit", "details": {"limitPrice": 1.0}}
@@ -409,6 +441,7 @@ Health check endpoint.
 ```
 
 #### Sniper Order
+
 ```json
 {"orderId": "...", "status": "pending", "type": "sniper"}
 {"orderId": "...", "status": "scanning_launch", "type": "sniper", "details": {"message": "Scanning for token availability..."}}
@@ -470,4 +503,3 @@ This is a task implementation for Eterna Labs. For questions or issues, please r
 ---
 
 **Built with**: TypeScript, Fastify, Prisma, BullMQ, PostgreSQL, Redis, WebSocket
-

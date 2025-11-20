@@ -1,14 +1,9 @@
 import { Queue } from 'bullmq';
 import { config } from '../config';
 import { OrderJobData } from '../utils/types';
-import Redis from 'ioredis';
+import { createRedisClient } from '../utils/redisClient';
 
-const redis = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
-  password: config.redis.password,
-  maxRetriesPerRequest: null, // Required by BullMQ for blocking operations
-});
+const redis = createRedisClient();
 
 export const orderQueue = new Queue<OrderJobData>(config.queue.name, {
   connection: redis,

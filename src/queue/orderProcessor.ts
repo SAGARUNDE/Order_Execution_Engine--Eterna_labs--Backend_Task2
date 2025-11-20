@@ -7,14 +7,9 @@ import { MarketOrderService } from "../services/marketOrder.service";
 import { LimitOrderService } from "../services/limitOrder.service";
 import { SniperOrderService } from "../services/sniperOrder.service";
 import { wsEmitter } from "../ws/websocketHandler";
-import Redis from "ioredis";
+import { createRedisClient } from "../utils/redisClient";
 
-const redis = new Redis({
-  host: config.redis.host,
-  port: config.redis.port,
-  password: config.redis.password,
-  maxRetriesPerRequest: null, // Required by BullMQ for blocking operations
-});
+const redis = createRedisClient();
 
 // Initialize services
 const router = new MockDexRouter(1.0);
